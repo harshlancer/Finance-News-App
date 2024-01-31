@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, Share, StyleSheet } from 'react-native';
 import Swiper from 'react-native-swiper';
 import Tts from "react-native-tts";
-
 interface Article {
   title: string;
   description: string;
@@ -14,9 +13,10 @@ interface Article {
 }
 interface Props {
   isDarkMode: boolean;
+  setIsDarkMode:React.Dispatch<React.SetStateAction<boolean>>,
 }
 
-const NewsWidget: React.FC<Props> = ({ isDarkMode }: Props) => {
+const NewsWidget: React.FC<Props> = ({ isDarkMode,setIsDarkMode }: Props) => {
   const [newsData, setNewsData] = useState<Article[]>([]);
   const [isSpeaking,setSpeaking]=useState(false)
   const key = '995e4a922f2a496f9bbf2ffe227a4e33';
@@ -79,15 +79,17 @@ const NewsWidget: React.FC<Props> = ({ isDarkMode }: Props) => {
         setSpeaking(false)
       }
     };
-    
+    const handleDark=()=>{
+      setIsDarkMode(!isDarkMode)
+    }
 
     return (
-      <View style={styles.card}>
-        <Text style={styles.heading}>{item.title}</Text>
-        <Text style={styles.summaryText}>{item.description}</Text>
+      <View style={isDarkMode ? styles.darkCard : styles.card}>
+        <Text style={isDarkMode ? styles.darkHeading : styles.heading}>{item.title}</Text>
+        <Text style={isDarkMode ? styles.darkSummaryText : styles.summaryText}>{item.description}</Text>
         {showPlaceholderImage ? (
           <Image
-            source={require('./placeholder_image.png')}
+            source={require('./No_Image_Available.png')}
             style={styles.bannerImage}
           />
         ) : (
@@ -95,13 +97,16 @@ const NewsWidget: React.FC<Props> = ({ isDarkMode }: Props) => {
         )}
         <View style={styles.buttonsContainer}>
           <TouchableOpacity onPress={() => handlePress(item.url)} style={styles.button}>
-            <Text style={styles.buttonText}>Read More</Text>
+            <Text style={isDarkMode ? styles.darkButtonText : styles.buttonText}>Read More</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={handleShare} style={[styles.button, { backgroundColor: '#27ae60' }]}>
-            <Text style={styles.buttonText}>Share</Text>
+            <Text style={isDarkMode ? styles.darkButtonText : styles.buttonText}>Share</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={handleSpeak} style={[styles.button, { backgroundColor: 'gray' }]}>
-            <Text style={styles.buttonText}>{isSpeaking ? "Stop" : "Speak"}</Text>
+            <Text style={isDarkMode ? styles.darkButtonText : styles.buttonText}>{isSpeaking ? "Stop" : "Speak"}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleDark} style={[styles.button, { backgroundColor: '#A7D397' }]}>
+            <Text style={isDarkMode ? styles.darkButtonText : styles.buttonText}>{isDarkMode ? "Light" : "Dark"  }</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -109,7 +114,7 @@ const NewsWidget: React.FC<Props> = ({ isDarkMode }: Props) => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={isDarkMode ? styles.darkContainer : styles.container }>
       <Swiper loop={false} showsPagination={false} horizontal={false} showsVerticalScrollIndicator>
         {newsData.map((item, index) => (
           <View key={index}>{renderNewsItem({ item })}
@@ -124,8 +129,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: 'gray',
+    backgroundColor: '#e5e4e2',
   },
+  darkContainer:{flex: 1,
+    padding: 16,
+    backgroundColor: '#3b3c36',},
+
   buttonsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -139,6 +148,10 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#fff',
+    fontWeight: 'bold',
+  },
+  darkButtonText: {
+    color: 'black',
     fontWeight: 'bold',
   },
   
@@ -156,11 +169,22 @@ const styles = StyleSheet.create({
   },
   
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: '#F8F8FF',
     borderRadius: 8,
     padding: 16,
     marginBottom: 16,
     shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  darkCard: {
+    backgroundColor: 'black',
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 16,
+    shadowColor: '#4C4646',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
@@ -173,9 +197,22 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 8,
   },
+  darkHeading: {
+    color: 'white',
+    fontFamily: 'oswald',
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
   summaryText: {
     fontSize: 18,
     color: '#555',
+    lineHeight: 25,
+    marginBottom: 8,
+  },
+  darkSummaryText: {
+    fontSize: 18,
+    color: 'white',
     lineHeight: 25,
     marginBottom: 8,
   },

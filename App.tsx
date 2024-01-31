@@ -7,18 +7,18 @@ const App = () => {
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
   };
+  
 
   useEffect(() => {
     // Ignore specific warnings related to new NativeEventEmitter
     LogBox.ignoreLogs([
-      'new NativeEventEmitter() was called with a non-null argument without the required addListener method.',
-      'new NativeEventEmitter() was called with a non-null argument without the required removeListeners method.',
+      "`new NativeEventEmitter()` was called with a non-null argument without the required `addListener` method."
     ]);
   }, []);
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: isDarkMode ? '#333' : '#fff' }]}>
-      <NewsWidget isDarkMode={isDarkMode} />
+      <NewsWidget isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
       {/* Your other components or code here */}
     </SafeAreaView>
   );
